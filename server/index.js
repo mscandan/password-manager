@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config();
+const cors = require('cors');
 const connectDB = require('./db/connect');
 
 const app = express();
@@ -8,6 +9,7 @@ const port = process.env.PORT || 4001;
 
 connectDB(process.env.DB_CONNECTION);
 
+app.use(cors());
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', '*');
