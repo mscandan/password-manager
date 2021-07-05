@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const connectDB = require('./db/connect');
+const router = require('./router');
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -22,4 +23,5 @@ app.use(function (req, res, next) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.listen(port, () => console.log(`server started on port: ${port}`));
+app.use('/api', router);
 app.get('/', (req, res) => res.send('router works fine'));
