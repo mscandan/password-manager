@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
 
 const PasswordSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
   name: {
     type: String,
     required: true,

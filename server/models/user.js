@@ -15,7 +15,6 @@ const UserSchema = new mongoose.Schema({
   enc_dec_key: {
     type: String,
   },
-  passwords: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Password' }],
   created: {
     type: Date,
   },

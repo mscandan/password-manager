@@ -1,16 +1,14 @@
 const Password = require('../models/password');
 const CryptoJS = require('crypto-js');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
   createPassword: (req, res, next) => {
     const { name, password } = req.body;
-    if (password && name) {
+    if (name && password) {
       Password.findOne({ name }, (err, pass) => {
         if (err) {
-          res.status(500).json({
-            code: 500,
-            message: 'Internal server error',
-          });
+          next(err);
         }
         if (pass) {
           res.status(400).json({
@@ -18,29 +16,37 @@ module.exports = {
             message: `A password with that name (${name}) already exists`,
           });
         } else {
-          Password.create(
-            {
-              ...req.body,
-              created: Date.now(),
-            },
-            (err, pass) => {
+          const header = req.headers['authorization'];
+          const token = header && header.split(' ')[1];
+          if (!token) {
+            res.status(401).json({
+              message: 'token is required',
+            });
+          } else {
+            jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
               if (err) {
-                next(err);
+                res.status(500).json({
+                  message: 'Server error',
+                });
               } else {
-                res.status(200).json({
-                  code: 200,
-                  data: pass,
-                  message: `Password with the name ${name} succesfully created`,
+                Password.create({ ...req.body, user: user.payload, created: Date.now() }, (err, pass) => {
+                  if (err) {
+                    next(err);
+                  } else {
+                    res.status(200).json({
+                      message: 'Process completed succesfully',
+                      data: pass,
+                    });
+                  }
                 });
               }
-            },
-          );
+            });
+          }
         }
       });
     } else {
-      res.status(400).json({
-        code: 400,
-        message: 'Password and name is required',
+      res.status(403).json({
+        message: 'Password and name are required',
       });
     }
   },
