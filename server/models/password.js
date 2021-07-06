@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
-require('dotenv').config();
 
 const PasswordSchema = new mongoose.Schema({
   name: {
